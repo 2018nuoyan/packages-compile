@@ -18,13 +18,13 @@ jobs:
       run: |
         wget https://downloads.immortalwrt.org/releases/23.05-SNAPSHOT/targets/ramips/mt7621/immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64.tar.xz -O immortalwrt-sdk.tar.xz
         tar -xf immortalwrt-sdk.tar.xz
+        mv immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64 immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621
         cd immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621
 
     - name: Customize feeds.conf.default
       run: |
         cd immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621
-        echo "src-git packages https://github.com/immortalwrt/packages.git" >> feeds.conf.default
-        echo "src-git luci https://github.com/immortalwrt/luci.git" >> feeds.conf.default
+        sed -i '$a src-git kiddin9 https://github.com/kiddin9/openwrt-packages' feeds.conf.default
 
     - name: Update and install feeds
       run: |
