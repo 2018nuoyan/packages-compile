@@ -1,0 +1,50 @@
+name: Compile Packages
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc unzip wget file libelf-dev
+
+    - name: Download SDK
+      run: |
+        wget <URL_to_SDK> -O immortalwrt-sdk.tar.xz
+        tar -xf immortalwrt-sdk.tar.xz
+        cd immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621
+
+    - name: Customize feeds.conf.default
+      run: |
+        cd immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621
+        echo "src-git packages https://github.com/immortalwrt/packages.git" >> feeds.conf.default
+        echo "src-git luci https://github.com/immortalwrt/luci.git" >> feeds.conf.default
+
+    - name: Update and install feeds
+      run: |
+        cd immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+    - name: Compile packages
+      run: |
+        cd immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621
+        make defconfig
+        make package/compile V=s
+
+    - name: Archive compiled packages
+      run: |
+        cd immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621/bin/packages
+        tar -czf compiled-packages.tar.gz *
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: compiled-packages
+        path: immortalwrt-sdk-23.05-SNAPSHOT-ramips-mt7621/bin/packages/compiled-packages.tar.gz
