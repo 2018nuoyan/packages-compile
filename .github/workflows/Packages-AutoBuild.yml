@@ -10,12 +10,12 @@ name: Packages-AutoBuild
 
 on: 
   workflow_dispatch:
-  repository_dispatch:
-   push: 
-     branches:
-       - master
-   schedule:
-     - cron: 0 1 */1 * *
+  #repository_dispatch:
+  # push: 
+  #   branches:
+  #     - master
+  # schedule:
+  #   - cron: 0 1 */1 * *
 
 env:
   PPPOE_USERNAME: ${{ secrets.PPPOE_USERNAME }}
